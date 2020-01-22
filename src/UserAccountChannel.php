@@ -3,7 +3,8 @@
 namespace Rir\UserAccountNotify;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\Notification;
 
 class UserAccountChannel
@@ -33,7 +34,8 @@ class UserAccountChannel
      *
      * @param  mixed  $notifiable
      * @param  Notification $notification
-     * @return void
+     *
+     * @return mixed
      */
     public function send($notifiable, Notification $notification)
     {
@@ -41,24 +43,25 @@ class UserAccountChannel
 
         $access_token = $this->getFreshToken();
 
-        retry(3, function () use ($message, &$access_token) {
-            try {
-                return $this->client->request(
-                    'POST', $this->notify_url, [
-                        'json'    => $message,
-                        'headers' => [
-                            'Content-Type'  => 'application/json',
-                            'Authorization' => "Bearer " . $access_token
-                        ]
+        try {
+            return $this->client->request(
+                'POST', $this->notify_url, [
+                    'json' => $message,
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => "Bearer " . $access_token
                     ]
-                );
-            } catch (ClientException $e) {
-                if ($e->getResponse()->getStatusCode() === 401) {
-                    $access_token = $this->getFreshToken();
-                };
-                throw new \Exception();
+                ]
+            );
+        } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string)$e->getResponse()->getBody();
+                $exception = json_decode($exception);
+                return new JsonResponse($exception, $e->getCode());
+            } else {
+                return new JsonResponse($e->getMessage(), 503);
             }
-        }, 500);
+        }
     }
 
     /**

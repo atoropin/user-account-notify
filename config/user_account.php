@@ -10,7 +10,7 @@ return [
     |
     */
 
-    'token_url'     => env('USER_ACCOUNT_TOKEN_URL', 'https://id.tomsk.life/auth/realms/master/protocol/openid-connect/token'),
+    'token_url'     => env('USER_ACCOUNT_TOKEN_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'notify_url'    => env('USER_ACCOUNT_NOTIFY_URL', 'https://account.tomsk.life/ntf-srv/send-notification'),
+    'notify_url'    => env('USER_ACCOUNT_NOTIFY_URL'),
 
     /*
     |--------------------------------------------------------------------------
