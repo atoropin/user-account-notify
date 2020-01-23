@@ -71,19 +71,27 @@ class UserAccountChannel
      */
     private function getFreshToken(): string
     {
-        $response = $this->client->request(
-            'POST', $this->token_url, [
-            'form_params' => [
-                'client_id'     => $this->client_id,
-                'client_secret' => $this->client_secret,
-                'grant_type'    => 'client_credentials'
-            ]
-        ])
-            ->getBody()
-            ->getContents();
+        try {
+            $response = $this->client->request(
+                'POST', $this->token_url, [
+                'form_params' => [
+                    'client_id' => $this->client_id,
+                    'client_secret' => $this->client_secret,
+                    'grant_type' => 'client_credentials'
+                ]
+            ])
+                ->getBody()
+                ->getContents();
+        } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string)$e->getResponse()->getBody();
+                $exception = json_decode($exception);
+                return new JsonResponse($exception, $e->getCode());
+            } else {
+                return new JsonResponse($e->getMessage(), 503);
+            }
+        }
 
-        $access_token = json_decode($response)->access_token;
-
-        return $access_token;
+        return json_decode($response)->access_token;
     }
 }
