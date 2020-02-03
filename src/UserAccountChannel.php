@@ -8,8 +8,11 @@ use Illuminate\Notifications\Notification;
 
 class UserAccountChannel extends AbstractUserAccountChannel
 {
+    private $notifyUrl;
+
     public function __construct()
     {
+        $this->notifyUrl = config('user_account.notify_url');
         parent::__construct();
     }
 
@@ -25,15 +28,15 @@ class UserAccountChannel extends AbstractUserAccountChannel
     {
         $message = $notification->toUserAccount($notifiable);
 
-        $access_token = $this->getFreshToken();
+        $accessToken = $this->tokenizer->getToken();
 
         try {
             return $this->client->request(
-                'POST', $this->notify_url . 'send-notification', [
+                'POST', $this->notifyUrl . 'send-notification', [
                     'json' => $message,
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'Authorization' => "Bearer " . $access_token
+                        'Authorization' => "Bearer " . $accessToken
                     ]
                 ]
             );

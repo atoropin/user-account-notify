@@ -8,8 +8,11 @@ use Illuminate\Notifications\Notification;
 
 class UserAccountMailChannel extends AbstractUserAccountChannel
 {
+    private $emailUrl;
+
     public function __construct()
     {
+        $this->emailUrl = config('user_account.email_url');
         parent::__construct();
     }
 
@@ -23,20 +26,20 @@ class UserAccountMailChannel extends AbstractUserAccountChannel
      */
     public function send($notifiable, Notification $notification)
     {
-        $message = $notification->toUserMail($notifiable);
+        $message = $notification->toUserAccountMail($notifiable);
 
-        $access_token = $this->getFreshToken();
+        $accessToken = $this->tokenizer->getToken();
 
         try {
-        return $this->client->request(
-            'POST', $this->email_url . 'send', [
-                'json' => $message,
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Authorization' => "Bearer " . $access_token
+            return $this->client->request(
+                'POST', $this->emailUrl . 'send', [
+                    'json' => $message,
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => "Bearer " . $accessToken
+                    ]
                 ]
-            ]
-        );
+            );
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $exception = (string)$e->getResponse()->getBody();
