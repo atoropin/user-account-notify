@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notification;
 
 class UserAccountChannel extends AbstractUserAccountChannel
 {
-    private $notifyUrl;
+    protected $notifyUrl;
 
     public function __construct()
     {

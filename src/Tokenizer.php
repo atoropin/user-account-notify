@@ -8,11 +8,11 @@ use Illuminate\Http\JsonResponse;
 
 class Tokenizer
 {
-    public $accessToken;
+    private $accessToken;
 
-    private $tokenUrl;
-    private $clientId;
-    private $clientSecret;
+    protected $tokenUrl;
+    protected $clientId;
+    protected $clientSecret;
 
     public function __construct()
     {
@@ -23,7 +23,12 @@ class Tokenizer
 
     public function getToken()
     {
-        return $this->accessToken ?? $this->renewAccessToken($this->clientId, $this->clientSecret, $this->tokenUrl);
+        if ($this->accessToken === null)
+        {
+            $this->accessToken = $this->renewAccessToken($this->clientId, $this->clientSecret, $this->tokenUrl);
+        }
+
+        return $this->accessToken;
     }
 
     /**
