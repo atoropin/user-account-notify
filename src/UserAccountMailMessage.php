@@ -12,6 +12,8 @@ class UserAccountMailMessage
 
     public $bodyHtml;
 
+    public $attachments;
+
     /**
      * Set the content of the notification.
      *
@@ -60,6 +62,19 @@ class UserAccountMailMessage
     public function bodyHtml($bodyHtml)
     {
         $this->bodyHtml = $bodyHtml;
+
+        return $this;
+    }
+
+    /**
+     * Set the content of the notification.
+     *
+     * @param  array  $attachments
+     * @return $this
+     */
+    public function attachments($attachments)
+    {
+        $this->attachments = $attachments;
 
         return $this;
     }

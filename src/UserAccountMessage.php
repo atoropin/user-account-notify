@@ -8,6 +8,10 @@ class UserAccountMessage
 
     public $htmlContent;
 
+    public $icon;
+
+    public $link;
+
     public $notificationTypeCode;
 
     public $organizationId;
@@ -42,6 +46,32 @@ class UserAccountMessage
     public function htmlContent($htmlContent)
     {
         $this->htmlContent = $htmlContent;
+
+        return $this;
+    }
+
+    /**
+     * Set the content of the notification.
+     *
+     * @param  string  $icon
+     * @return $this
+     */
+    public function icon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * Set the content of the notification.
+     *
+     * @param  string  $link
+     * @return $this
+     */
+    public function link($link)
+    {
+        $this->link = $link;
 
         return $this;
     }
